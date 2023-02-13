@@ -438,10 +438,16 @@ function saveBilingualEpub ($fileAddress1, $fileAddress2,
     file_put_contents("$outputFileAddress.tmp/OPS/content.opf", $contentopf);
     file_put_contents("$outputFileAddress.tmp/OPS/toc.ncx", $tocncx);
     file_put_contents("$outputFileAddress.tmp/OPS/cover.html", $coverhtml);
-    copy($coverAddress, "$outputFileAddress.tmp/OPS/cover.png");
+    
+	if (file_exists($coverAddress)) {
+		copy($coverAddress, "$outputFileAddress.tmp/OPS/cover.png");
+	}
     
     for ($i = 1; $i <= $imgCount; $i++) {
-        copy("$picsFolder/$i.png", "$outputFileAddress.tmp/OPS/$i.png");
+		$imgAddress = "$picsFolder/$i.png";
+        if (file_exists($imgAddress)) {
+			copy($imgAddress, "$outputFileAddress.tmp/OPS/$i.png");
+		}
     }
     
     for ($i = 0; $i < count($chaptershtml); $i++) {
