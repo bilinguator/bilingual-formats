@@ -1,5 +1,10 @@
 <?php
 
+function strReplaceOnce ($search, $replace, $text) { 
+    $pos = strpos($text, $search); 
+    return $pos !== false ? substr_replace($text, $replace, $pos, strlen($search)) : $text; 
+}
+
 function saveBilingualFb2 ($fileAddress1, $fileAddress2,
     $outputFileAddress = '.' . DIRECTORY_SEPARATOR . 'bilingual.fb2',
     $coverAddress = '', $picsFolder = '', $srcLang = '', $lang = '', $id = '') {
@@ -152,13 +157,8 @@ function saveBilingualFb2 ($fileAddress1, $fileAddress2,
     $fbContent = str_replace(['<i>', '</i>'], ['<emphasis>', '</emphasis>'], $fbContent);
     $fbContent = str_replace('</h1>' . PHP_EOL . '<empty-line/>' . PHP_EOL . '<h1>', ' / ', $fbContent);
     $fbContent = str_replace('<h1>', '</section>' . PHP_EOL . '<section>' . PHP_EOL . '<title>', $fbContent);
-    
-    function str_replace_once ($search, $replace, $text) { 
-        $pos = strpos($text, $search); 
-        return $pos !== false ? substr_replace($text, $replace, $pos, strlen($search)) : $text; 
-    }
 
-    $fbContent = str_replace_once(PHP_EOL . '</section>', '', $fbContent);
+    $fbContent = strReplaceOnce(PHP_EOL . '</section>', '', $fbContent);
     $fbContent = str_replace('</h1>', '</title>', $fbContent);
 
     $fbContent .= substr_count($fbContent, '<title>') > 1 ? '</section>' . PHP_EOL : '';
