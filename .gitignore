@@ -1,0 +1,5 @@
+*.png
+
+tests/img/
+tests/results/
+tests/*.txt
