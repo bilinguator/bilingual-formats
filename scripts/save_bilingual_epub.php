@@ -30,255 +30,256 @@ function saveBilingualEpub ($fileAddress1, $fileAddress2,
     }
     
     $fileContent1 = file_get_contents($fileAddress1);
-	$fileContent2 = file_get_contents($fileAddress2);
+    $fileContent2 = file_get_contents($fileAddress2);
 
-	$fileCoding1 = mb_detect_encoding($fileContent1, ['UTF-8', 'ASCII', 'CP1251']);
+    $fileCoding1 = mb_detect_encoding($fileContent1, ['UTF-8', 'ASCII', 'CP1251']);
     $fileCoding2 = mb_detect_encoding($fileContent2, ['UTF-8', 'ASCII', 'CP1251']);
 
-	$textArray1 = preg_split("/[\r]*[\n]+/", iconv($fileCoding1, 'UTF-8', $fileContent1));
-	$textArray2 = preg_split("/[\r]*[\n]+/", iconv($fileCoding2, 'UTF-8', $fileContent2));
+    $textArray1 = preg_split("/[\r]*[\n]+/", iconv($fileCoding1, 'UTF-8', $fileContent1));
+    $textArray2 = preg_split("/[\r]*[\n]+/", iconv($fileCoding2, 'UTF-8', $fileContent2));
 
-	$author1 = $textArray1[0];
-	$author2 = $textArray2[0];
+    $author1 = $textArray1[0];
+    $author2 = $textArray2[0];
 
-	$title1 = str_replace(['<h1>', '</h1>'], '', explode('<delimiter>', $textArray1[1])[0]);
-	$title2 = str_replace(['<h1>', '</h1>'], '', explode('<delimiter>', $textArray2[1])[0]);
-	$titleCouple = "$title1 / $title2";
-	
-	$titleRest1 = @explode('<delimiter>', $textArray1[1])[1];
-	$titleRest2 = @explode('<delimiter>', $textArray2[1])[1];
+    $title1 = str_replace(['<h1>', '</h1>'], '', explode('<delimiter>', $textArray1[1])[0]);
+    $title2 = str_replace(['<h1>', '</h1>'], '', explode('<delimiter>', $textArray2[1])[0]);
+    $titleCouple = "$title1 / $title2";
+    
+    $titleRest1 = @explode('<delimiter>', $textArray1[1])[1];
+    $titleRest2 = @explode('<delimiter>', $textArray2[1])[1];
 
-	$authorsCouple = '';
-	$authorTitle = '';
+    $authorsCouple = '';
+    $authorTitle = '';
 
     if ($author1 !== '<delimiter>' && $author2 !== '<delimiter>') {
-		$authorsCouple = "$author1 / $author2";
-		$authorTitle = "<p>$authorsCouple</p>";
-	} else if ($author1 !== '<delimiter>' && $author2 === '<delimiter>') {
-		$authorsCouple = $author1;
-		$authorTitle = "<p>$authorsCouple</p>";
-	} else if ($author1 === '<delimiter>' && $author2 !== '<delimiter>') {
-		$authorsCouple = $author2;
-		$authorTitle = "<p>$authorsCouple</p>";
-	}
+        $authorsCouple = "$author1 / $author2";
+        $authorTitle = "<p>$authorsCouple</p>";
+    } else if ($author1 !== '<delimiter>' && $author2 === '<delimiter>') {
+        $authorsCouple = $author1;
+        $authorTitle = "<p>$authorsCouple</p>";
+    } else if ($author1 === '<delimiter>' && $author2 !== '<delimiter>') {
+        $authorsCouple = $author2;
+        $authorTitle = "<p>$authorsCouple</p>";
+    }
 
     // Indexes of header articles
 
-	$h1Array = [];
+    $h1Array = [];
 
-	for ($i = 2; $i < count($textArray1); $i++) {
-		if (strpos($textArray1[$i], '<h1>') !== false && strpos($textArray2[$i], '<h1>') !== false)
-			array_push($h1Array, $i);
-	}
-	array_push($h1Array, count($textArray1));
-	
-	$chaptersArray1 = [];
-	$chaptersArray2 = [];
-	$firstChapterIndex = 0;
+    for ($i = 2; $i < count($textArray1); $i++) {
+        if (strpos($textArray1[$i], '<h1>') !== false && strpos($textArray2[$i], '<h1>') !== false) {
+            array_push($h1Array, $i);
+        }
+    }
+    array_push($h1Array, count($textArray1));
+    
+    $chaptersArray1 = [];
+    $chaptersArray2 = [];
+    $firstChapterIndex = 0;
 
-	if (count($h1Array) > 1) {
-		for ($i = 0; $i < count($h1Array) - 1; $i++) {
-			$chaptersArray1[$i] = array_slice($textArray1, $h1Array[$i], $h1Array[$i + 1] - $h1Array[$i]);
-			$chaptersArray2[$i] = array_slice($textArray2, $h1Array[$i], $h1Array[$i + 1] - $h1Array[$i]);
-		}
+    if (count($h1Array) > 1) {
+        for ($i = 0; $i < count($h1Array) - 1; $i++) {
+            $chaptersArray1[$i] = array_slice($textArray1, $h1Array[$i], $h1Array[$i + 1] - $h1Array[$i]);
+            $chaptersArray2[$i] = array_slice($textArray2, $h1Array[$i], $h1Array[$i + 1] - $h1Array[$i]);
+        }
 
-		if ($h1Array[0] != 2) {
-			$firstChapterIndex = 1;
+        if ($h1Array[0] != 2) {
+            $firstChapterIndex = 1;
 
-			array_unshift($chaptersArray1, array_slice($textArray1, 2, $h1Array[0] - 1));
-			array_unshift($chaptersArray2, array_slice($textArray2, 2, $h1Array[0] - 1));
-			array_unshift($h1Array, 2);
-		}
-	}
+            array_unshift($chaptersArray1, array_slice($textArray1, 2, $h1Array[0] - 1));
+            array_unshift($chaptersArray2, array_slice($textArray2, 2, $h1Array[0] - 1));
+            array_unshift($h1Array, 2);
+        }
+    }
 
-	if (count($h1Array) == 1) {
-		$chaptersArray1[0] = array_slice($textArray1, 2, count($textArray1) - 2);
-		$chaptersArray2[0] = array_slice($textArray2, 2, count($textArray2) - 2);
-		$firstChapterIndex = 1;
-	}
+    if (count($h1Array) == 1) {
+        $chaptersArray1[0] = array_slice($textArray1, 2, count($textArray1) - 2);
+        $chaptersArray2[0] = array_slice($textArray2, 2, count($textArray2) - 2);
+        $firstChapterIndex = 1;
+    }
 
     // cover.html
 
-	$coverhtml = <<<HTML
-	<html xmlns="http://www.w3.org/1999/xhtml">
-	<head>
-		<title>$titleCouple</title>
-		<link rel="stylesheet" href="style.css" type="text/css" />
-	</head>
-	<body>
-		<h1>$titleCouple</h1>
-		<img src="cover.png">
-	</body>
-	</html>
-	HTML;
-	
-	$chaptershtml = [];
-	$imgCount = 0;
+    $coverhtml = <<<HTML
+    <html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>$titleCouple</title>
+        <link rel="stylesheet" href="style.css" type="text/css" />
+    </head>
+    <body>
+        <h1>$titleCouple</h1>
+        <img src="cover.png">
+    </body>
+    </html>
+    HTML;
+    
+    $chaptershtml = [];
+    $imgCount = 0;
 
-	// If first part has no header
-	if ($firstChapterIndex == 1) {
-		$chaptershtml[0] = <<<HTML
-		<html xmlns="http://www.w3.org/1999/xhtml" lang="$lang1">
-		<head>
-			<title></title>
-			<link rel="stylesheet" href="style.css" type="text/css" />
-		</head>
-		<body>
-		
-		HTML;
+    // If first part has no header
+    if ($firstChapterIndex == 1) {
+        $chaptershtml[0] = <<<HTML
+        <html xmlns="http://www.w3.org/1999/xhtml" lang="$lang1">
+        <head>
+            <title></title>
+            <link rel="stylesheet" href="style.css" type="text/css" />
+        </head>
+        <body>
+        
+        HTML;
 
-		for ($i = 0; $i < count($chaptersArray1[0]) - 1; $i++) {
-			if (strpos($chaptersArray1[0][$i], '<img') !== false && $chaptersArray1[0][$i] === $chaptersArray2[0][$i]) {
-				$imgIndex = explode('<img', $chaptersArray1[0][$i])[1];
-				$imgIndex = explode('>', $imgIndex)[0];
-				$chaptershtml[0] .= <<<HTML
-					<img src="$imgIndex.png">
-					<br />
-				
-				HTML;
-				$imgCount++;
-			} else {
-				if (strpos($chaptersArray1[0][$i], '<img') !== false) {
-					$imgIndex = explode('<img', $chaptersArray1[0][$i])[1];
-					$imgIndex = explode('>', $imgIndex)[0];
-					$chaptershtml[0] .= <<<HTML
+        for ($i = 0; $i < count($chaptersArray1[0]) - 1; $i++) {
+            if (strpos($chaptersArray1[0][$i], '<img') !== false && $chaptersArray1[0][$i] === $chaptersArray2[0][$i]) {
+                $imgIndex = explode('<img', $chaptersArray1[0][$i])[1];
+                $imgIndex = explode('>', $imgIndex)[0];
+                $chaptershtml[0] .= <<<HTML
+                    <img src="$imgIndex.png">
+                    <br />
+                
+                HTML;
+                $imgCount++;
+            } else {
+                if (strpos($chaptersArray1[0][$i], '<img') !== false) {
+                    $imgIndex = explode('<img', $chaptersArray1[0][$i])[1];
+                    $imgIndex = explode('>', $imgIndex)[0];
+                    $chaptershtml[0] .= <<<HTML
                     <img src="$imgIndex.png">
                     <br />
                 
                     HTML;
-					$imgCount++;
-				} else {
-					$chaptershtml[0] .= <<<HTML
-						<p lang="$lang1">{$chaptersArray1[0][$i]}</p>
-						<br />
-					
-					HTML;
-				}
+                    $imgCount++;
+                } else {
+                    $chaptershtml[0] .= <<<HTML
+                        <p lang="$lang1">{$chaptersArray1[0][$i]}</p>
+                        <br />
+                    
+                    HTML;
+                }
 
-				if (strpos($chaptersArray2[0][$i], '<img') !== false) {
-					$imgIndex = explode('<img', $chaptersArray2[0][$i])[1];
-					$imgIndex = explode('>', $imgIndex)[0];
-					$chaptershtml[0] .= <<<HTML
-						<img src="$imgIndex.png">
-						<br />
-					
-					HTML;
-					$imgCount++;
-				} else {
-					$chaptershtml[0] .= <<<HTML
-						<p lang="$lang2">{$chaptersArray2[0][$i]}</p>
-						<br />
-					
-					HTML;
-				}
-			}
-		}
-		$chaptershtml[0] .= <<<HTML
-		</body>
-		</html>
-		HTML;
-	}
+                if (strpos($chaptersArray2[0][$i], '<img') !== false) {
+                    $imgIndex = explode('<img', $chaptersArray2[0][$i])[1];
+                    $imgIndex = explode('>', $imgIndex)[0];
+                    $chaptershtml[0] .= <<<HTML
+                        <img src="$imgIndex.png">
+                        <br />
+                    
+                    HTML;
+                    $imgCount++;
+                } else {
+                    $chaptershtml[0] .= <<<HTML
+                        <p lang="$lang2">{$chaptersArray2[0][$i]}</p>
+                        <br />
+                    
+                    HTML;
+                }
+            }
+        }
+        $chaptershtml[0] .= <<<HTML
+        </body>
+        </html>
+        HTML;
+    }
 
-	$title;
+    $title;
 
-	for ($i = $firstChapterIndex; $i < count($chaptersArray1); $i++) {
-		$title = str_replace(['<h1>', '</h1>'], '', $chaptersArray1[$i][0]);
-		$title .= ' / ' . str_replace(['<h1>', '</h1>'], '', $chaptersArray2[$i][0]);
-		$chaptershtml[$i] = <<<HTML
-		<html xmlns="http://www.w3.org/1999/xhtml">
-		<head>
-			<title>$title</title>
-			<link rel="stylesheet" href="style.css" type="text/css" />
-		</head>
-		<body>
-			<h1>$title</h1>
-			<br />
-		
-		HTML;
-		
-		for ($j = 1; $j < count($chaptersArray1[$i]); $j++) {
-			if (strpos($chaptersArray1[$i][$j], '<img') !== false && $chaptersArray1[$i][$j] == $chaptersArray2[$i][$j]) {
-				$imgIndex = explode('<img', $chaptersArray1[$i][$j])[1];
-				$imgIndex = explode('>', $imgIndex)[0];
-				$chaptershtml[$i] .= <<<HTML
-					<img src="$imgIndex.png">
-					<br />
+    for ($i = $firstChapterIndex; $i < count($chaptersArray1); $i++) {
+        $title = str_replace(['<h1>', '</h1>'], '', $chaptersArray1[$i][0]);
+        $title .= ' / ' . str_replace(['<h1>', '</h1>'], '', $chaptersArray2[$i][0]);
+        $chaptershtml[$i] = <<<HTML
+        <html xmlns="http://www.w3.org/1999/xhtml">
+        <head>
+            <title>$title</title>
+            <link rel="stylesheet" href="style.css" type="text/css" />
+        </head>
+        <body>
+            <h1>$title</h1>
+            <br />
+        
+        HTML;
+        
+        for ($j = 1; $j < count($chaptersArray1[$i]); $j++) {
+            if (strpos($chaptersArray1[$i][$j], '<img') !== false && $chaptersArray1[$i][$j] == $chaptersArray2[$i][$j]) {
+                $imgIndex = explode('<img', $chaptersArray1[$i][$j])[1];
+                $imgIndex = explode('>', $imgIndex)[0];
+                $chaptershtml[$i] .= <<<HTML
+                    <img src="$imgIndex.png">
+                    <br />
 
-				HTML;
-				$imgCount++;
-			} else {
-				if (strpos($chaptersArray1[$i][$j], '<img') !== false) {
-					$imgIndex = explode('<img', $chaptersArray1[$i][$j])[1];
-					$imgIndex = explode('>', $imgIndex)[0];
-					$chaptershtml[$i] .= <<<HTML
-						<img src="$imgIndex.png">
-						<br />
-					
-					HTML;
-					$imgCount++;
-				} else {
-					$chaptershtml[$i] .= <<<HTML
-						<p lang="$lang1">{$chaptersArray1[$i][$j]}</p>
-						<br />
-						
-					HTML;
-				}
-			
-				if (strpos($chaptersArray2[$i][$j], '<img') !== false) {
-					$imgIndex = explode('<img', $chaptersArray2[$i][$j])[1];
-					$imgIndex = explode('>', $imgIndex)[0];
-					$chaptershtml[$i] .= <<<HTML
-						<img src="$imgIndex.png">
-						<br />
-					
-					HTML;
-					$imgCount++;
-				} else {
-					$chaptershtml[$i] .= <<<HTML
-						<p lang="$lang2">{$chaptersArray2[$i][$j]}</p>
-						<br />
-					
-					HTML;
-				}
-			}
-		}
-		$chaptershtml[$i] .= <<<HTML
-		</body>
-		</html>
-		HTML;
-	}
+                HTML;
+                $imgCount++;
+            } else {
+                if (strpos($chaptersArray1[$i][$j], '<img') !== false) {
+                    $imgIndex = explode('<img', $chaptersArray1[$i][$j])[1];
+                    $imgIndex = explode('>', $imgIndex)[0];
+                    $chaptershtml[$i] .= <<<HTML
+                        <img src="$imgIndex.png">
+                        <br />
+                    
+                    HTML;
+                    $imgCount++;
+                } else {
+                    $chaptershtml[$i] .= <<<HTML
+                        <p lang="$lang1">{$chaptersArray1[$i][$j]}</p>
+                        <br />
+                        
+                    HTML;
+                }
+            
+                if (strpos($chaptersArray2[$i][$j], '<img') !== false) {
+                    $imgIndex = explode('<img', $chaptersArray2[$i][$j])[1];
+                    $imgIndex = explode('>', $imgIndex)[0];
+                    $chaptershtml[$i] .= <<<HTML
+                        <img src="$imgIndex.png">
+                        <br />
+                    
+                    HTML;
+                    $imgCount++;
+                } else {
+                    $chaptershtml[$i] .= <<<HTML
+                        <p lang="$lang2">{$chaptersArray2[$i][$j]}</p>
+                        <br />
+                    
+                    HTML;
+                }
+            }
+        }
+        $chaptershtml[$i] .= <<<HTML
+        </body>
+        </html>
+        HTML;
+    }
 
-	// Remove <delimiter>
+    // Remove <delimiter>
 
-	for ($i = 0; $i < count($chaptershtml); $i++) {
-		$chaptershtml[$i] = str_replace(PHP_EOL . '	<p><delimiter></p>' . PHP_EOL, PHP_EOL, $chaptershtml[$i]);
-		$chaptershtml[$i] = str_replace('<delimiter>', '<br />', $chaptershtml[$i]);
-	}
+    for ($i = 0; $i < count($chaptershtml); $i++) {
+        $chaptershtml[$i] = str_replace(PHP_EOL . '    <p><delimiter></p>' . PHP_EOL, PHP_EOL, $chaptershtml[$i]);
+        $chaptershtml[$i] = str_replace('<delimiter>', '<br />', $chaptershtml[$i]);
+    }
 
-	$last_chapter = count($chaptershtml) - 1;
-	$chaptershtml[$last_chapter] .= <<<HTML
-	</body>
-	</html>
-	HTML;
+    $last_chapter = count($chaptershtml) - 1;
+    $chaptershtml[$last_chapter] .= <<<HTML
+    </body>
+    </html>
+    HTML;
 
-	$replace = <<<HTML
-	<body>
-		<p>$titleRest1</p>
-		<br />
-		<p>$titleRest2</p>
-		<br />
+    $replace = <<<HTML
+    <body>
+        <p>$titleRest1</p>
+        <br />
+        <p>$titleRest2</p>
+        <br />
 
-	HTML;
-	$chaptershtml[0] = str_replace('<body>' . PHP_EOL, $replace, $chaptershtml[0]);
+    HTML;
+    $chaptershtml[0] = str_replace('<body>' . PHP_EOL, $replace, $chaptershtml[0]);
 
-	for ($i = 0; $i < count($chaptershtml); $i++) {
-		$replace = <<<HTML
-			<p></p>
-			<br />
+    for ($i = 0; $i < count($chaptershtml); $i++) {
+        $replace = <<<HTML
+            <p></p>
+            <br />
 
-		HTML;
-		$chaptershtml[$i] = str_replace($replace, '', $chaptershtml[$i]);
-	}
+        HTML;
+        $chaptershtml[$i] = str_replace($replace, '', $chaptershtml[$i]);
+    }
 
     // toc.ncx
 
@@ -439,15 +440,15 @@ function saveBilingualEpub ($fileAddress1, $fileAddress2,
     file_put_contents("$outputFileAddress.tmp/OPS/toc.ncx", $tocncx);
     file_put_contents("$outputFileAddress.tmp/OPS/cover.html", $coverhtml);
     
-	if (file_exists($coverAddress)) {
-		copy($coverAddress, "$outputFileAddress.tmp/OPS/cover.png");
-	}
+    if (file_exists($coverAddress)) {
+        copy($coverAddress, "$outputFileAddress.tmp/OPS/cover.png");
+    }
     
     for ($i = 1; $i <= $imgCount; $i++) {
-		$imgAddress = "$picsFolder/$i.png";
+        $imgAddress = "$picsFolder/$i.png";
         if (file_exists($imgAddress)) {
-			copy($imgAddress, "$outputFileAddress.tmp/OPS/$i.png");
-		}
+            copy($imgAddress, "$outputFileAddress.tmp/OPS/$i.png");
+        }
     }
     
     for ($i = 0; $i < count($chaptershtml); $i++) {
