@@ -2,7 +2,7 @@
 
 # Bilingual formats
 
-**Bilingual formats** is the set of PHP scripts to convert two aligned source texts into one TXT, FB2 or EPUB file with alternating paragraphs. Keep in mind that source texts are not just plain texts but have simple but rather useful [specification](#source-files-specification).
+**Bilingual formats** is the set of PHP scripts to convert two aligned source texts into one TXT, FB2 or EPUB file with alternating paragraphs. Keep in mind that source texts are not just plain texts but have simple but rather useful [specification](#source-files-specification). The code has been developed and tested with **PHP 7.3.33**.
 
 This is the very code [Bilinguator](https://bilinguator.com/) uses to generate bilingual books — the powerful tool to study languages.
 
