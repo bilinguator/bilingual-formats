@@ -1,6 +1,6 @@
 ![](img/banner.png)
 
-# Bilingual Formats
+# Bilingual formats
 
 **Bilingual formats** is the set of PHP scripts to convert two aligned source texts into one TXT, FB2 or EPUB file with alternating paragraphs. Keep in mind that source texts are not just plain texts but have simple but rather useful [specification](#source-files-specification).
 
