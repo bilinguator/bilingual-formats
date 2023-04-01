@@ -1,5 +1,4 @@
 <?php
-// https://bilinguator.com/github/bilingual-formats/tests/tests.php
 
 require_once('../save_bilingual_txt.php');
 
