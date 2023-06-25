@@ -30,7 +30,7 @@ To start using a function from the list, download and plug in the corresponding 
 saveBilingualTxt function reads two source files and creates bilingual TXT file with alternating paragraphs.
 
 ```
-saveBilingualTxt(
+saveBilingualTxt (
     string $fileAddress1,
     string $fileAddress2,
     string $outputFileAddress = '.' . DIRECTORY_SEPARATOR . 'bilingual.txt'
