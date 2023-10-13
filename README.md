@@ -29,7 +29,7 @@ To start using a function from the list, download and plug in the corresponding 
 
 saveBilingualTxt function reads two source files and creates bilingual TXT file with alternating paragraphs.
 
-```
+```php
 saveBilingualTxt (
     string $fileAddress1,
     string $fileAddress2,
@@ -45,7 +45,7 @@ saveBilingualTxt (
 
 saveBilingualFb2 function reads two source files and creates bilingual FB2 file with alternating paragraphs.
 
-```
+```php
 saveBilingualFb2 (
     string $fileAddress1,
     string $fileAddress2,
@@ -76,7 +76,7 @@ saveBilingualFb2 (
 
 saveBilingualEpub function reads two source files and creates bilingual EPUB file with alternating paragraphs.
 
-```
+```php
 saveBilingualEpub (
     $fileAddress1,
     $fileAddress2,
