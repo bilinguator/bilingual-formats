@@ -1,7 +1,7 @@
 <?php
 
 function saveBilingualFb2 ($fileAddress1, $fileAddress2,
-    $outputFileAddress = '.' . DIRECTORY_SEPARATOR . 'bilingual.fb2',
+    $outputFileAddress = './bilingual.fb2',
     $coverAddress = '', $picsFolder = '', $srcLang = '', $lang = '', $id = '') {
 
     if (!file_exists($fileAddress1) && !file_exists($fileAddress2)) {
@@ -12,9 +12,9 @@ function saveBilingualFb2 ($fileAddress1, $fileAddress2,
         throw new Exception("File $fileAddress2 not found!");
     }
 
-    $outputDirectory = explode(DIRECTORY_SEPARATOR, $outputFileAddress);
+    $outputDirectory = explode('/', $outputFileAddress);
     $outputDirectory = array_slice($outputDirectory, 0, count($outputDirectory) - 1);
-    $outputDirectory = implode(DIRECTORY_SEPARATOR, $outputDirectory);
+    $outputDirectory = implode('/', $outputDirectory);
     
     if (!is_dir($outputDirectory)) {
         throw new Exception("Directory $outputDirectory not found!");
@@ -150,20 +150,23 @@ function saveBilingualFb2 ($fileAddress1, $fileAddress2,
     }
     
     $fbContent = str_replace(['<i>', '</i>'], ['<emphasis>', '</emphasis>'], $fbContent);
-    $fbContent = str_replace('</h1>' . PHP_EOL . '<empty-line/>' . PHP_EOL . '<h1>', ' / ', $fbContent);
-    $fbContent = str_replace('<h1>', '</section>' . PHP_EOL . '<section>' . PHP_EOL . '<title>', $fbContent);
+    $fbContent = str_replace("</h1>\n<empty-line/>\n<h1>", ' / ', $fbContent);
+    $fbContent = str_replace('<h1>', "</section>\n<section>\n<title>", $fbContent);
 
-    $search = PHP_EOL . '</section>';
-    $pos = strpos($fbContent, $search);
-    $fbContent = $pos !== false ? substr_replace($fbContent, '', $pos, strlen($search)) : $fbContent;
+    function str_replace_once ($search, $replace, $text) { 
+        $pos = strpos($text, $search); 
+        return $pos !== false ? substr_replace($text, $replace, $pos, strlen($search)) : $text; 
+    }
+
+    $fbContent = str_replace_once("\n</section>", '', $fbContent);
 
     $fbContent = str_replace('</h1>', '</title>', $fbContent);
-    $fbContent .= substr_count($fbContent, '<title>') > 1 ? '</section>' . PHP_EOL : '';
-    $fbContent .= '</body>' . PHP_EOL;
+    $fbContent .= substr_count($fbContent, '<title>') > 1 ? "</section>\n" : '';
+    $fbContent .= "</body>\n";
 
     $fbContent = str_replace(['<delimiter>'], ['</p><p>'], $fbContent);
     $fbContent = str_replace(['<b>', '</b>'], ['<strong>', '</strong>'], $fbContent);
-    $fbContent = str_replace('<p></p>' . PHP_EOL . '<empty-line/>' . PHP_EOL, '', $fbContent);
+    $fbContent = str_replace("<p></p>\n<empty-line/>\n", '', $fbContent);
 
     $cover = '';
     if (file_exists($coverAddress)) {
@@ -184,7 +187,7 @@ function saveBilingualFb2 ($fileAddress1, $fileAddress2,
         }
     }
 
-    $fbContent = preg_replace("/" . PHP_EOL . "{4,6}/", str_repeat(PHP_EOL, 2), $fbContent);
+    $fbContent = preg_replace("/\n{4,6}/", str_repeat("\n", 2), $fbContent);
     
     $fbContent .= <<<FB2
     <binary id="cover" content-type="image/png">$cover</binary>
