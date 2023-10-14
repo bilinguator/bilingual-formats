@@ -1,5 +1,18 @@
 <?php
 
+/**
+ * Saves bilingual FB2 file with alternating paragraphs from two input TXT files.
+ *
+ * @param  string $fileAddress1 Path to TXT file 1.
+ * @param  string $fileAddress2 Path to TXT file 2.
+ * @param  string $outputFileAddress Path to output bilingual FB2 file.
+ * @param  string $coverAddress Path to PNG cover.
+ * @param  string $picsFolder Path to folder with illustrations.
+ * @param  string $srcLang ISO code of language 1.
+ * @param  string $lang ISO code of language 2.
+ * @param  string $id Book ID.
+ * @return void
+ */
 function saveBilingualFb2 ($fileAddress1, $fileAddress2,
     $outputFileAddress = './bilingual.fb2',
     $coverAddress = '', $picsFolder = '', $srcLang = '', $lang = '', $id = '') {

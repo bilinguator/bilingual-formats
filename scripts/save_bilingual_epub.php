@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * Remove directory with all files in it.
+ *
+ * @param  string $dir Path to directory.
+ * @return bool Result of rmdir function.
+ */
 function delTree ($dir) {
     $files = array_diff(scandir($dir), ['.', '..']);
     foreach ($files as $file) {
@@ -9,6 +15,19 @@ function delTree ($dir) {
     return rmdir($dir);
 }
 
+/**
+ * Saves bilingual EPUB file with alternating paragraphs from two input TXT files.
+ *
+ * @param  string $fileAddress1 Path to TXT file 1.
+ * @param  string $fileAddress2 Path to TXT file 2.
+ * @param  string $outputFileAddress Path to output bilingual EPUB file.
+ * @param  string $coverAddress Path to PNG cover.
+ * @param  string $picsFolder Path to folder with illustrations.
+ * @param  string $lang1 ISO code of language 1.
+ * @param  string $lang2 ISO code of language 2.
+ * @param  string $id Book ID.
+ * @return void
+ */
 function saveBilingualEpub ($fileAddress1, $fileAddress2,
     $outputFileAddress = './bilingual.epub',
     $coverAddress = '', $picsFolder = '', $lang1 = '', $lang2 = '', $id = '') {

@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * Saves bilingual TXT file with alternating paragraphs from two input TXT files.
+ *
+ * @param  string $fileAddress1 Path to TXT file 1.
+ * @param  string $fileAddress2 Path to TXT file 2.
+ * @param  string $outputFileAddress Path to output bilingual TXT file.
+ * @return void
+ */
 function saveBilingualTxt ($fileAddress1, $fileAddress2,
     $outputFileAddress = './bilingual.txt') {
 
