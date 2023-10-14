@@ -1,7 +1,15 @@
 <?php
 
+/**
+ * Saves bilingual TXT file with alternating paragraphs from two input TXT files.
+ *
+ * @param  string $fileAddress1 Path to TXT file 1.
+ * @param  string $fileAddress2 Path to TXT file 2.
+ * @param  string $outputFileAddress Path to output bilingual TXT file.
+ * @return void
+ */
 function saveBilingualTxt ($fileAddress1, $fileAddress2,
-    $outputFileAddress = '.' . DIRECTORY_SEPARATOR . 'bilingual.txt') {
+    $outputFileAddress = './bilingual.txt') {
 
     if (!file_exists($fileAddress1) && !file_exists($fileAddress2)) {
         throw new Exception("Files $fileAddress1 and $fileAddress2 not found!");
@@ -11,9 +19,9 @@ function saveBilingualTxt ($fileAddress1, $fileAddress2,
         throw new Exception("File $fileAddress2 not found!");
     }
 
-    $outputDirectory = explode(DIRECTORY_SEPARATOR, $outputFileAddress);
+    $outputDirectory = explode('/', $outputFileAddress);
     $outputDirectory = array_slice($outputDirectory, 0, count($outputDirectory) - 1);
-    $outputDirectory = implode(DIRECTORY_SEPARATOR, $outputDirectory);
+    $outputDirectory = implode('/', $outputDirectory);
     
     if (!is_dir($outputDirectory)) {
         throw new Exception("Directory $outputDirectory not found!");

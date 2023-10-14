@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * Remove directory with all files in it.
+ *
+ * @param  string $dir Path to directory.
+ * @return bool Result of rmdir function.
+ */
 function delTree ($dir) {
     $files = array_diff(scandir($dir), ['.', '..']);
     foreach ($files as $file) {
@@ -9,8 +15,21 @@ function delTree ($dir) {
     return rmdir($dir);
 }
 
+/**
+ * Saves bilingual EPUB file with alternating paragraphs from two input TXT files.
+ *
+ * @param  string $fileAddress1 Path to TXT file 1.
+ * @param  string $fileAddress2 Path to TXT file 2.
+ * @param  string $outputFileAddress Path to output bilingual EPUB file.
+ * @param  string $coverAddress Path to PNG cover.
+ * @param  string $picsFolder Path to folder with illustrations.
+ * @param  string $lang1 ISO code of language 1.
+ * @param  string $lang2 ISO code of language 2.
+ * @param  string $id Book ID.
+ * @return void
+ */
 function saveBilingualEpub ($fileAddress1, $fileAddress2,
-    $outputFileAddress = '.' . DIRECTORY_SEPARATOR . 'bilingual.epub',
+    $outputFileAddress = './bilingual.epub',
     $coverAddress = '', $picsFolder = '', $lang1 = '', $lang2 = '', $id = '') {
 
     if (!file_exists($fileAddress1) && !file_exists($fileAddress2)) {
@@ -21,9 +40,9 @@ function saveBilingualEpub ($fileAddress1, $fileAddress2,
         throw new Exception("File $fileAddress2 not found!");
     }
 
-    $outputDirectory = explode(DIRECTORY_SEPARATOR, $outputFileAddress);
+    $outputDirectory = explode('/', $outputFileAddress);
     $outputDirectory = array_slice($outputDirectory, 0, count($outputDirectory) - 1);
-    $outputDirectory = implode(DIRECTORY_SEPARATOR, $outputDirectory);
+    $outputDirectory = implode('/', $outputDirectory);
 
     if (!is_dir($outputDirectory)) {
         throw new Exception("Directory $outputDirectory not found!");
@@ -252,7 +271,7 @@ function saveBilingualEpub ($fileAddress1, $fileAddress2,
     // Remove <delimiter>
 
     for ($i = 0; $i < count($chaptershtml); $i++) {
-        $chaptershtml[$i] = str_replace(PHP_EOL . '    <p><delimiter></p>' . PHP_EOL, PHP_EOL, $chaptershtml[$i]);
+        $chaptershtml[$i] = str_replace("\n    <p><delimiter></p> \n", "\n", $chaptershtml[$i]);
         $chaptershtml[$i] = str_replace('<delimiter>', '<br />', $chaptershtml[$i]);
     }
 
@@ -270,7 +289,7 @@ function saveBilingualEpub ($fileAddress1, $fileAddress2,
         <br />
 
     HTML;
-    $chaptershtml[0] = str_replace('<body>' . PHP_EOL, $replace, $chaptershtml[0]);
+    $chaptershtml[0] = str_replace("<body>\n", $replace, $chaptershtml[0]);
 
     for ($i = 0; $i < count($chaptershtml); $i++) {
         $replace = <<<HTML
